@@ -9,46 +9,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  copy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
       - name: Generate token
         id: generate_token
         uses: tibdex/github-app-token@v1
         with:
           app_id: ${{ secrets.MY_GITHUB_APP_ID }}
           private_key: ${{ secrets.MY_GITHUB_APP_PRIVATE_KEY }}
-      - name: Setup commit description
-        env:
-          RUN_URL: "${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
-          HEAD_COMMIT_URL: "${{ github.event.repository.html_url }}/commit/${{ github.event.after || github.sha }}"
-        id: setup_description
+      - name: Create Github dispatch event
         run: |
-          DESCRIPTION="update Markdown files 🚀"
-          DESCRIPTION="${DESCRIPTION//$'\n'/'%0A'}"
-          echo "::set-output name=content::$DESCRIPTION"
-      - name: Copy markdown files
-        uses: dmnemec/copy_file_to_another_repo_action@v1.1.1
-        env:
-          API_TOKEN_GITHUB: ${{ steps.generate_token.outputs.token }}
-        with:
-          source_file: "."
-          destination_repo: "Yuta-31/mldi_public_document"
-          destination_folder: "/source/_posts"
-          destination_branch: "master"
-          destination_branch_create: "feature/update-document"
-          user_email: "github-actions[bot]@users.noreply.github.com"
-          user_name: "github-actions[bot]"
-          commit_message: ${{ steps.setup_description.outputs.content }}
-      - name: create Pull Request to document repository
-        run: |
-          gh pr create \
-            --title "update document" \
-            --body "${{ steps.setup_description.outputs.content }}" \
-            --repo Yuta-31/mldi_public_document \
-            --base master \
-            --head feature/update-document
-        env:
-          GH_TOKEN: ${{ steps.generate_token.outputs.token}}
+          curl --request POST 'https://api.github.com/repos/Yuta-31/mldi_public_document/dispatches' \
+          --header 'Autherization: Bearer ${{ steps.generate_token.outputs.token }}' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "event_type": "document-updated"
+          }'
