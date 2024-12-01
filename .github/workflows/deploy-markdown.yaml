@@ -50,6 +50,5 @@ jobs:
             --repo Yuta-31/mldi_public_document \
             --base master \
             --head feature/update-document
-            --reviwer "${{ github.event.head_commit.committer.username || github.triggering_actor }}"
         env:
           GH_TOKEN: ${{ steps.generate_token.outputs.token}}
