@@ -26,7 +26,8 @@ jobs:
           HEAD_COMMIT_URL: "${{ github.event.repository.html_url }}/commit/${{ github.event.after || github.sha }}"
         id: setup_description
         run: |
-          DESCRIPTION=$(update Markdown files 🚀)
+          DESCRIPTION=$(cat << EOF 
+          update Markdown files 🚀)
           DESCRIPTION="${DESCRIPTION//$'\n'/'%0A'}"
           echo "::set-output name=content::$DESCRIPTION"
       - name: Copy markdown files
