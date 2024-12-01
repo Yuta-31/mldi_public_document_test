@@ -26,7 +26,7 @@ jobs:
           HEAD_COMMIT_URL: "${{ github.event.repository.html_url }}/commit/${{ github.event.after || github.sha }}"
         id: setup_description
         run: |
-          DESCRIPTION=$(cat << EOF
+          DESCRIPTION=$(cat <<EOF
           update Markdown files 🚀
 
           created from ${{ env.RUN_URL }}
