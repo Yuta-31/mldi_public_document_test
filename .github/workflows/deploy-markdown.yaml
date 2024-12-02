@@ -1,4 +1,4 @@
-name: copy md to docs
+name: Document Updated
 
 on:
   push:
